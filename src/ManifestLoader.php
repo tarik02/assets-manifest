@@ -3,6 +3,7 @@
 namespace Tarik02\AssetsManifest;
 
 use Exception;
+use Str;
 
 use Tarik02\AssetsManifest\Exceptions\{
     HotManifestLoadingException,
@@ -83,7 +84,12 @@ class ManifestLoader
     {
         $baseUrl = Utils::normalizePath($baseUrl);
 
-        if (\file_exists($hotManifestPath = "{$this->basePath}{$this->hotManifestName}")) {
+        if (Str::startsWith($this->hotManifestName, '/')) {
+            $hotManifestPath = $this->hotManifestName;
+        } else {
+            $hotManifestPath = "{$this->manifestBasePath}{$this->hotManifestName}";
+        }
+        if (\file_exists($hotManifestPath)) {
             try {
                 $hotManifestData = \json_decode(
                     \file_get_contents($hotManifestPath),
