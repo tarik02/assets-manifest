@@ -83,6 +83,7 @@ class ManifestLoader
     public function load(string $baseUrl): Manifest
     {
         $baseUrl = Utils::normalizePath($baseUrl);
+        $basePath = $this->basePath;
 
         if (Str::startsWith($this->hotManifestName, '/')) {
             $hotManifestPath = $this->hotManifestName;
@@ -98,6 +99,7 @@ class ManifestLoader
                 );
 
                 $baseUrl = $hotManifestData['baseUri'] ?? $hotManifestData['baseUrl'];
+                $basePath = $baseUrl;
 
                 $manifestSource = Utils::request("{$baseUrl}{$this->manifestPath}");
             } catch (Exception $exception) {
@@ -117,7 +119,7 @@ class ManifestLoader
             );
 
             return new Manifest(
-                $this->basePath,
+                $basePath,
                 $baseUrl,
                 $manifestData
             );
