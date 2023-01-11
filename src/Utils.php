@@ -8,16 +8,21 @@ class Utils
 {
     /**
      * @param string $url
+     * @param array<int, mixed> $options
      * @return string
      * @throws CurlException
      */
-    public static function request(string $url): string
+    public static function request(string $url, array $options = []): string
     {
         $curl = \curl_init();
         try {
             \curl_setopt($curl, \CURLOPT_RETURNTRANSFER, 1);
             \curl_setopt($curl, \CURLOPT_URL, $url);
-            \curl_setopt($curl, CURLOPT_FAILONERROR, true);
+            \curl_setopt($curl, \CURLOPT_FAILONERROR, true);
+
+            foreach ($options as $option => $value) {
+                \curl_setopt($curl, $option, $value);
+            }
 
             $result = \curl_exec($curl);
 

@@ -6,6 +6,7 @@ use Exception;
 use Str;
 
 use Tarik02\AssetsManifest\Exceptions\{
+    CurlException,
     HotManifestLoadingException,
     ManifestLoadingException
 };
@@ -98,12 +99,38 @@ class ManifestLoader
                     flags: JSON_THROW_ON_ERROR
                 );
 
-                $baseUrl = $hotManifestData['baseUri'] ?? $hotManifestData['baseUrl'];
-                $basePath = $baseUrl;
+                $manifestBaseUrl = $hotManifestData['baseUri'] ?? $hotManifestData['baseUrl'];
+                $manifestBasePath = $baseUrl;
 
-                $manifestSource = Utils::request("{$baseUrl}{$this->manifestPath}");
+                $manifestUrl = isset($hotManifestData['socket'])
+                    ? \preg_replace('~^https:~', 'http:', $manifestBaseUrl) . $this->manifestPath
+                    : $manifestBaseUrl . $this->manifestPath;
+
+                $manifestSource = Utils::request(
+                    $manifestUrl,
+                    [
+                        \CURLOPT_UNIX_SOCKET_PATH => isset($hotManifestData['socket'])
+                            ? \sprintf(
+                                '%s/%s',
+                                \dirname($hotManifestPath),
+                                $hotManifestData['socket']
+                            )
+                            : null,
+                    ]
+                );
+
+                $baseUrl = $manifestBaseUrl;
+                $basePath = $manifestBasePath;
             } catch (Exception $exception) {
-                throw new HotManifestLoadingException(previous: $exception);
+                if (
+                    $exception instanceof CurlException
+                        && isset($hotManifestData['socket'])
+                        && $exception->getCode() === \CURLE_COULDNT_CONNECT
+                ) {
+                    // Socket file exists, but CURL can't connect to it
+                } else {
+                    throw new HotManifestLoadingException(previous: $exception);
+                }
             }
         }
 
