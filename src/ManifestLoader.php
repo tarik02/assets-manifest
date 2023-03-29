@@ -100,7 +100,7 @@ class ManifestLoader
                 );
 
                 $manifestBaseUrl = $hotManifestData['baseUri'] ?? $hotManifestData['baseUrl'];
-                $manifestBasePath = $baseUrl;
+                $manifestBasePath = $manifestBaseUrl;
 
                 $manifestUrl = isset($hotManifestData['socket'])
                     ? \preg_replace('~^https:~', 'http:', $manifestBaseUrl) . $this->manifestPath
