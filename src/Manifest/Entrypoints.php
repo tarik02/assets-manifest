@@ -65,7 +65,8 @@ class Entrypoints implements ArrayAccess
                         )
                     ),
                 ],
-            ]
+            ],
+            $entrypointList
         );
     }
 

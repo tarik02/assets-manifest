@@ -7,23 +7,14 @@ use Tarik02\AssetsManifest\Manifest;
 class Entrypoint
 {
     /**
-     * @var Manifest
-     */
-    public readonly Manifest $manifest;
-
-    /**
-     * @var array
-     */
-    public readonly array $data;
-
-    /**
-     * @param Manifest $manifest
      * @param array<string, string> $data
+     * @param array<int, array<string, mixed>> $original
      */
-    public function __construct(Manifest $manifest, array $data)
-    {
-        $this->manifest = $manifest;
-        $this->data = $data;
+    public function __construct(
+        public readonly Manifest $manifest,
+        public readonly array $data,
+        public readonly array $original
+    ) {
     }
 
     /**
